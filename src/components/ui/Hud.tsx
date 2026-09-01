@@ -132,38 +132,27 @@ export default function Hud() {
   const imgCount = scenario ? slideImages(scenario.slides[index]).length : 0;
 
   const slides = scenario?.slides ?? [];
-  const label = (i: number) => slides[i].title ?? slides[i].quote ?? `Сцена ${i + 1}`;
 
   return (
     <>
-      {/* вертикальная линия с чекпойнтами */}
-      <nav data-nav className="fixed right-10 top-1/2 -translate-y-1/2 flex flex-col items-center select-none z-10">
-        <div className="relative w-px bg-white/30" style={{ height: `${Math.max(1, n - 1) * 44}px` }}>
-          <div className="absolute left-0 top-0 w-px bg-white/90 transition-[height] duration-700 ease-out" style={{ height: `${n > 1 ? (index / (n - 1)) * 100 : 0}%` }} />
+      {/* вертикальная линия с точками-сценами и бегущим индикатором */}
+      <nav data-nav className="fixed right-6 top-1/2 -translate-y-1/2 select-none z-10">
+        <div className="relative w-px bg-white/25" style={{ height: `${Math.max(1, n - 1) * 36}px` }}>
           {slides.map((_, i) => (
             <button
               key={i}
               data-nav
               onClick={() => useDeck.getState().go(i)}
-              title={label(i)}
-              aria-label={label(i)}
-              className="group absolute -left-[9px] flex items-center"
-              style={{ top: `${n > 1 ? (i / (n - 1)) * 100 : 0}%`, transform: "translateY(-50%)" }}
-            >
-              <span
-                className={`block rounded-full border transition-all duration-500 ${
-                  i === index ? "w-[19px] h-[19px] bg-white border-white shadow-[0_0_18px_rgba(255,255,255,0.9)]" : i < index ? "w-[11px] h-[11px] bg-white/80 border-white/80 mx-[4px]" : "w-[11px] h-[11px] bg-black/40 border-white/60 mx-[4px]"
-                }`}
-              />
-              <span
-                className={`pointer-events-none absolute right-8 whitespace-nowrap text-[11px] tracking-[0.15em] uppercase transition-colors ${
-                  i === index ? "text-white/80" : "text-white/0 group-hover:text-white/60"
-                }`}
-              >
-                {label(i)}
-              </span>
-            </button>
+              aria-label={`Сцена ${i + 1}`}
+              className="absolute -left-[3px] w-[7px] h-[7px] -translate-y-1/2 rounded-full bg-white/45 hover:bg-white transition-colors"
+              style={{ top: `${n > 1 ? (i / (n - 1)) * 100 : 0}%` }}
+            />
           ))}
+          {/* индикатор текущей сцены — плавно едет по линии */}
+          <div
+            className="absolute -left-[6px] w-[13px] h-[13px] -translate-y-1/2 rounded-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.9)] transition-[top] duration-700 ease-out pointer-events-none"
+            style={{ top: `${n > 1 ? (index / (n - 1)) * 100 : 0}%` }}
+          />
         </div>
       </nav>
       {imgCount > 1 && (

@@ -93,7 +93,7 @@ function hexA(hex: string, a: number) {
 
 const WHITE = "#f4f6fb";
 const MUTED = "#9aa5bb";
-const PAD = 260;
+const PAD = 380; // запас по краям: панель шире кадра на узких экранах
 
 /** Средний цвет картинки — им экран «светит» на зал */
 export function averageColor(canvas: HTMLCanvasElement): [number, number, number] {
