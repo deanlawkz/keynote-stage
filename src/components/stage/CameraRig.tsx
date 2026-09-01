@@ -44,6 +44,8 @@ export default function CameraRig() {
     tLook.current.set(p.x + pointer.x * 0.8, p.y + pointer.y * 0.4, p.z);
     easing.damp3(pos.current, tPos.current, 1.1, d);
     easing.damp3(look.current, tLook.current, 0.9, d);
+    // прилетели — можно листать карусель
+    useDeck.getState().setFlying(pos.current.distanceTo(tPos.current) > 1.2);
     camera.position.copy(pos.current);
     camera.lookAt(look.current);
   });

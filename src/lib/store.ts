@@ -7,6 +7,9 @@ type State = {
   /** карусель картинок на текущем слайде */
   carousel: number;
   zoom: number;
+  /** камера ещё летит к сцене — жесты карусели не принимаем */
+  flying: boolean;
+  setFlying: (f: boolean) => void;
   setCarousel: (i: number) => void;
   setZoom: (z: number) => void;
   setScenario: (s: Scenario) => void;
@@ -20,13 +23,17 @@ export const useDeck = create<State>((set, get) => ({
   index: 0,
   carousel: 0,
   zoom: 1,
+  flying: false,
+  setFlying: (flying) => {
+    if (get().flying !== flying) set({ flying });
+  },
   setCarousel: (carousel) => set({ carousel }),
   setZoom: (zoom) => set({ zoom: Math.max(0.6, Math.min(4, zoom)) }),
   setScenario: (scenario) => set({ scenario, index: 0 }),
   go: (i) => {
     const n = get().scenario?.slides.length ?? 0;
     const index = Math.max(0, Math.min(n - 1, i));
-    if (index !== get().index) set({ index, carousel: 0, zoom: 1 });
+    if (index !== get().index) set({ index, carousel: 0, zoom: 1, flying: true });
   },
   next: () => get().go(get().index + 1),
   prev: () => get().go(get().index - 1),

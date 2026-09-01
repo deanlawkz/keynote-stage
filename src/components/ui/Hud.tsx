@@ -46,7 +46,9 @@ export default function Hud() {
   // свайп и зум для карусели картинок: трекпад/колёсико, щипок, тач, перетаскивание мышью
   useEffect(() => {
     const st = useDeck.getState;
+    // число картинок на текущем слайде; 0 — пока камера летит (жесты в полёте сбивают карусель)
     const count = () => {
+      if (st().flying) return 0;
       const s = st().scenario?.slides[st().index];
       return s ? slideImages(s).length : 0;
     };
@@ -135,44 +137,45 @@ export default function Hud() {
 
   return (
     <>
-      {/* вертикальная линия с точками-сценами и бегущим индикатором */}
-      <nav data-nav className="fixed right-6 top-1/2 -translate-y-1/2 select-none z-10">
-        <div className="relative w-px bg-white/25" style={{ height: `${Math.max(1, n - 1) * 36}px` }}>
+      {/* вертикальная линия с точками-сценами и бегущим индикатором; размеры — от высоты экрана, чтобы на 4K не пропадала */}
+      <nav data-nav className="fixed top-1/2 -translate-y-1/2 select-none z-10" style={{ right: "2.2vw" }}>
+        <div className="relative bg-white/35" style={{ width: "0.2vh", height: `${Math.max(1, n - 1) * 5.5}vh` }}>
           {slides.map((_, i) => (
             <button
               key={i}
               data-nav
               onClick={() => useDeck.getState().go(i)}
               aria-label={`Сцена ${i + 1}`}
-              className="absolute -left-[3px] w-[7px] h-[7px] -translate-y-1/2 rounded-full bg-white/45 hover:bg-white transition-colors"
-              style={{ top: `${n > 1 ? (i / (n - 1)) * 100 : 0}%` }}
+              className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/55 hover:bg-white transition-colors"
+              style={{ left: "50%", top: `${n > 1 ? (i / (n - 1)) * 100 : 0}%`, width: "1.1vh", height: "1.1vh" }}
             />
           ))}
           {/* индикатор текущей сцены — плавно едет по линии */}
           <div
-            className="absolute -left-[6px] w-[13px] h-[13px] -translate-y-1/2 rounded-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.9)] transition-[top] duration-700 ease-out pointer-events-none"
-            style={{ top: `${n > 1 ? (index / (n - 1)) * 100 : 0}%` }}
+            className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-white transition-[top] duration-700 ease-out pointer-events-none"
+            style={{ left: "50%", top: `${n > 1 ? (index / (n - 1)) * 100 : 0}%`, width: "2vh", height: "2vh", boxShadow: "0 0 1.6vh rgba(255,255,255,0.9)" }}
           />
         </div>
       </nav>
       {imgCount > 1 && (
-        <div data-nav className="fixed left-1/2 -translate-x-1/2 bottom-5 flex gap-2 items-center select-none">
+        <div data-nav className="fixed left-1/2 -translate-x-1/2 flex items-center select-none" style={{ bottom: "2.5vh", gap: "1vh" }}>
           {Array.from({ length: imgCount }, (_, k) => (
             <button
               key={k}
               data-nav
               onClick={() => useDeck.getState().setCarousel(k)}
-              className={`h-[6px] rounded-full transition-all duration-500 ${k === carousel ? "w-6 bg-white/85" : "w-[6px] bg-white/30"}`}
+              className={`rounded-full transition-all duration-500 ${k === carousel ? "bg-white/90" : "bg-white/35"}`}
+              style={{ height: "0.9vh", width: k === carousel ? "3.5vh" : "0.9vh" }}
             />
           ))}
         </div>
       )}
-      <div className="fixed right-8 bottom-4 text-[11px] tracking-[0.2em] text-white/40 tabular-nums select-none">
+      <div className="fixed tracking-[0.2em] text-white/50 tabular-nums select-none" style={{ right: "2.2vw", bottom: "2vh", fontSize: "1.4vh" }}>
         {n ? `${String(index + 1).padStart(2, "0")} / ${String(n).padStart(2, "0")}` : ""}
       </div>
       <div
-        className="fixed left-6 bottom-4 text-[11px] tracking-[0.2em] text-white/40 select-none transition-opacity duration-1000"
-        style={{ opacity: hint ? 1 : 0 }}
+        className="fixed tracking-[0.2em] text-white/40 select-none transition-opacity duration-1000"
+        style={{ opacity: hint ? 1 : 0, left: "2vw", bottom: "2vh", fontSize: "1.4vh" }}
       >
         ← → ЛИСТАТЬ · F ПОЛНЫЙ ЭКРАН
       </div>
