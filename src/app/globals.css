@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: #000;
+  color: #fff;
+  overflow: hidden;
+  cursor: none;
+}
+body:hover { cursor: default; }

@@ -1,0 +1,16 @@
+{
+  "title": "Research and AI at MNU",
+  "env": "space",
+  "accent": "#ffb15a",
+  "slides": [
+    { "layout": "title", "kicker": "Maqsut Narikbayev University", "title": "Наука и ИИ в MNU", "subtitle": "Итоги года · стратегия · платформы", "shot": "wide" },
+    { "layout": "section", "kicker": "01", "title": "Карьерные треки", "subtitle": "Teaching / Research — от студента до профессора", "shot": "left" },
+    { "layout": "media", "title": "Два трека, одна лестница", "image": "/media/career-tracks.png", "caption": "Схема карьерных треков MNU", "shot": "close" },
+    { "layout": "stat", "title": "Платформа KPI за год", "stats": [ { "value": "151", "label": "показателей KPI" }, { "value": "7", "label": "школ и подразделений" }, { "value": "100%", "label": "согласований онлайн" } ], "shot": "medium" },
+    { "layout": "bullets", "kicker": "Что изменилось", "title": "Три сдвига в исследовательской культуре", "bullets": [ "Публикации в Q1–Q2 стали нормой, а не событием", "Единая матрица KPI видна каждому — от аспиранта до ректора", "ИИ-инструменты встроены в повседневную работу кафедр" ], "shot": "right" },
+    { "layout": "media", "title": "Матрица KPI", "image": "/media/kpi-matrix.png", "shot": "close" },
+    { "layout": "quote", "quote": "Университет, который измеряет науку честно, получает право говорить о ней громко.", "author": "Из стратегии MNU 2030", "shot": "low" },
+    { "layout": "media", "title": "MIND Reports", "image": "/media/mind-reports.png", "caption": "Серия аналитических отчётов — 172 просмотра у лидера", "shot": "medium" },
+    { "layout": "title", "title": "Спасибо", "subtitle": "hub.mnu.kz", "shot": "wide" }
+  ]
+}

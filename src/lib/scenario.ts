@@ -1,0 +1,55 @@
+/** Формат сценария презентации: JSON в public/scenarios/<name>.json */
+
+export type Shot = "wide" | "medium" | "close" | "left" | "right" | "low";
+export type Env = "stage" | "space";
+
+export type Stat = { value: string; label: string };
+
+export type Slide = {
+  layout: "title" | "section" | "bullets" | "stat" | "media" | "quote";
+  kicker?: string;
+  title?: string;
+  subtitle?: string;
+  bullets?: string[];
+  stats?: Stat[];
+  image?: string;
+  caption?: string;
+  quote?: string;
+  author?: string;
+  /** ракурс камеры для этого слайда */
+  shot?: Shot;
+  /** цвет акцента, переопределяет сценарий */
+  accent?: string;
+};
+
+export type Scenario = {
+  title: string;
+  env?: Env;
+  accent?: string;
+  slides: Slide[];
+};
+
+export const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
+/** Абсолютный URL к файлу из public/ с учётом basePath */
+export function asset(p: string) {
+  if (/^https?:\/\//.test(p)) return p;
+  return `${BASE}${p.startsWith("/") ? p : `/${p}`}`;
+}
+
+export async function loadScenario(name: string): Promise<Scenario> {
+  const res = await fetch(asset(`/scenarios/${name}.json`), { cache: "no-store" });
+  if (!res.ok) throw new Error(`Сценарий «${name}» не найден (${res.status})`);
+  const sc = (await res.json()) as Scenario;
+  if (!Array.isArray(sc.slides) || sc.slides.length === 0) throw new Error("В сценарии нет слайдов");
+  return sc;
+}
+
+/** Ракурс по умолчанию, если в слайде не задан: чередуем, чтобы камера жила */
+export function defaultShot(i: number, layout: Slide["layout"]): Shot {
+  if (layout === "title") return "wide";
+  if (layout === "media") return "close";
+  if (layout === "stat") return "medium";
+  const cycle: Shot[] = ["medium", "left", "close", "right", "low"];
+  return cycle[i % cycle.length];
+}
