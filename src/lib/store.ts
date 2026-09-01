@@ -8,6 +8,9 @@ type State = {
   carousel: number;
   zoom: number;
   /** камера ещё летит к сцене — жесты карусели не принимаем */
+  /** режим постобработки: для замера производительности */
+  postMode: string;
+  setPostMode: (m: string) => void;
   flying: boolean;
   flightStart: number;
   setFlying: (f: boolean) => void;
@@ -24,6 +27,8 @@ export const useDeck = create<State>((set, get) => ({
   index: 0,
   carousel: 0,
   zoom: 1,
+  postMode: "smaa",
+  setPostMode: (postMode) => set({ postMode }),
   flying: false,
   flightStart: 0,
   setFlying: (flying) => {

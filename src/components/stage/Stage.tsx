@@ -11,6 +11,7 @@ import Flashes from "./Flashes";
 import Streaks from "./Streaks";
 import CameraRig from "./CameraRig";
 import Post from "./Post";
+import AutoQuality from "./AutoQuality";
 
 export const DEFAULT_ACCENT = "#5aa9ff";
 
@@ -31,6 +32,7 @@ export default function Stage() {
         <color attach="background" args={["#000005"]} />
         <fogExp2 attach="fog" args={["#000005", 0.0045]} />
         <CameraRig />
+        <AutoQuality />
         <Stars radius={400} depth={200} count={3000} factor={4} saturation={0.1} fade speed={0} />
         <Dust length={len} />
         <Flashes count={n} accent={accent} />
