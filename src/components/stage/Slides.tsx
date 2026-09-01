@@ -6,7 +6,9 @@ import * as THREE from "three";
 import { paintSlide, CW, CH } from "@/lib/painter";
 import type { Scenario } from "@/lib/scenario";
 import { useDeck } from "@/lib/store";
-import { PANEL_W, PANEL_H, viewDist, slidePos, slideRot } from "@/lib/shots";
+import { PANEL_W, PANEL_H, viewDist, slidePos, slideRot, slideOpacity } from "@/lib/shots";
+import { slideImages } from "@/lib/scenario";
+import Carousel from "./Carousel";
 
 function makeTex() {
   const canvas = document.createElement("canvas");
@@ -28,15 +30,7 @@ function Panel({ index, tex, hasImage, layout }: { index: number; tex: THREE.Tex
     if (!mat.current) return;
     // расстояние вдоль маршрута: положительное — слайд впереди, отрицательное — уже пролетели
     const d = camera.position.z - pos.z;
-    const active = useDeck.getState().index === index;
-    let o: number;
-    if (active) {
-      // текущий слайд проявляется по мере подлёта; сзади (d<0) не показываем
-      o = d < 0 ? 0 : 1 - THREE.MathUtils.smoothstep(d, VD + 8, VD + 45);
-    } else {
-      // остальные скрыты; предыдущий гаснет, когда камера проходит сквозь него или отлетает
-      o = THREE.MathUtils.smoothstep(d, 0.5, 8) * (1 - THREE.MathUtils.smoothstep(d, 24, 42));
-    }
+    const o = slideOpacity(d, useDeck.getState().index === index, VD);
     mat.current.opacity = o;
     // ближе — ярче, чтобы бликовало в bloom
     const glow = hasImage ? 0.92 : 1.06 + 0.16 * (1 - THREE.MathUtils.smoothstep(d, 15, 60));
@@ -72,7 +66,10 @@ export default function Slides({ scenario, accent }: { scenario: Scenario; accen
   return (
     <>
       {texes.map((t, i) => (
-        <Panel key={i} index={i} tex={t} hasImage={!!scenario.slides[i].image} layout={scenario.slides[i].layout} />
+        <group key={i}>
+          <Panel index={i} tex={t} hasImage={false} layout={scenario.slides[i].layout} />
+          {slideImages(scenario.slides[i]).length > 0 && <Carousel index={i} images={slideImages(scenario.slides[i])} />}
+        </group>
       ))}
     </>
   );

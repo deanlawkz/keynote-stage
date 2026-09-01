@@ -13,6 +13,8 @@ export type Slide = {
   bullets?: string[];
   stats?: Stat[];
   image?: string;
+  /** несколько картинок — карусель: свайп листает, колёсико/щипок — зум */
+  images?: string[];
   caption?: string;
   quote?: string;
   author?: string;
@@ -28,6 +30,11 @@ export type Scenario = {
   accent?: string;
   slides: Slide[];
 };
+
+/** Список картинок слайда (одна или карусель) */
+export function slideImages(s: Slide): string[] {
+  return s.images?.length ? s.images : s.image ? [s.image] : [];
+}
 
 export const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 

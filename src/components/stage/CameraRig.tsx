@@ -5,7 +5,9 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { easing } from "maath";
 import { useDeck } from "@/lib/store";
-import { slidePos, VIEW_DIST, viewDist } from "@/lib/shots";
+import { slidePos, VIEW_DIST, viewDist, IMG_H, IMG_GAP } from "@/lib/shots";
+import { slideImages } from "@/lib/scenario";
+import { imageCache } from "@/lib/imageCache";
 
 /** Камера летит от слайда к слайду сквозь пространство, чуть дышит и реагирует на мышь */
 export default function CameraRig() {
@@ -18,9 +20,22 @@ export default function CameraRig() {
   useFrame(({ camera, pointer }, dt) => {
     const d = Math.min(dt, 0.05);
     t.current += d;
-    const { index, scenario } = useDeck.getState();
-    const p = slidePos(index);
-    const dist = viewDist(scenario?.slides[index]?.layout);
+    const { index, scenario, carousel, zoom } = useDeck.getState();
+    const p = slidePos(index).clone();
+    const slide = scenario?.slides[index];
+    let dist = viewDist(slide?.layout);
+    // карусель: центр на активной картинке, зум — подлёт ближе
+    const imgs = slide ? slideImages(slide) : [];
+    if (imgs.length) {
+      const widths = imgs.map((src) => IMG_H * (imageCache.get(src) ?? 16 / 9));
+      const total = widths.reduce((a, b) => a + b, 0) + IMG_GAP * (widths.length - 1);
+      let x = -total / 2;
+      for (let k = 0; k < carousel && k < widths.length; k++) x += widths[k] + IMG_GAP;
+      x += (widths[carousel] ?? 0) / 2;
+      p.x += x;
+      p.y -= 0.6;
+      dist = dist / zoom;
+    }
     tPos.current.set(
       p.x + Math.sin(t.current * 0.15) * 0.25 + pointer.x * 1.5,
       p.y + Math.sin(t.current * 0.11) * 0.15 + pointer.y * 0.8,

@@ -121,17 +121,17 @@ export async function paintSlide(canvas: HTMLCanvasElement, slide: Slide, accent
   if (s.layout === "title") {
     let y = CH * 0.42;
     if (s.kicker) {
-      ctx.font = font(500, 44);
+      ctx.font = font(500, 54);
       ctx.fillStyle = accent;
       ctx.textAlign = "center";
-      ctx.letterSpacing = "10px";
-      ctx.fillText(s.kicker.toUpperCase(), CW / 2, y - 140);
+      ctx.letterSpacing = "12px";
+      ctx.fillText(s.kicker.toUpperCase(), CW / 2, y - 200);
       ctx.letterSpacing = "0px";
     }
-    y = lines(ctx, s.title ?? "", CW / 2, y, CW - PAD * 2, 168, 700, WHITE, 1.08, "center");
-    if (s.subtitle) lines(ctx, s.subtitle, CW / 2, y + 40, CW - PAD * 2, 62, 400, MUTED, 1.25, "center");
+    y = lines(ctx, s.title ?? "", CW / 2, y, CW - PAD * 2, 250, 700, WHITE, 1.08, "center");
+    if (s.subtitle) lines(ctx, s.subtitle, CW / 2, y + 50, CW - PAD * 2, 78, 400, MUTED, 1.25, "center");
     ctx.fillStyle = accent;
-    ctx.fillRect(CW / 2 - 60, CH * 0.42 - 70 - 168 + 20, 120, 6);
+    ctx.fillRect(CW / 2 - 70, CH * 0.42 - 300, 140, 6);
   }
 
   if (s.layout === "section") {
@@ -155,14 +155,14 @@ export async function paintSlide(canvas: HTMLCanvasElement, slide: Slide, accent
       ctx.fillText(s.kicker.toUpperCase(), PAD, y - 120);
       ctx.letterSpacing = "0px";
     }
-    y = lines(ctx, s.title ?? "", PAD, y, CW - PAD * 2, 112, 700, WHITE, 1.1);
+    y = lines(ctx, s.title ?? "", PAD, y, CW - PAD * 2, 128, 700, WHITE, 1.1);
     y += 90;
     for (const b of s.bullets ?? []) {
       ctx.fillStyle = accent;
       ctx.beginPath();
       ctx.arc(PAD + 18, y - 24, 12, 0, Math.PI * 2);
       ctx.fill();
-      y = lines(ctx, b, PAD + 80, y, CW - PAD * 2 - 80, 66, 400, "#dfe4ee", 1.3) + 34;
+      y = lines(ctx, b, PAD + 80, y, CW - PAD * 2 - 80, 76, 400, "#dfe4ee", 1.3) + 34;
     }
   }
 
@@ -188,48 +188,9 @@ export async function paintSlide(canvas: HTMLCanvasElement, slide: Slide, accent
   }
 
   if (s.layout === "media") {
-    // картинка занимает почти весь слайд, заголовок — небольшой в углу
+    // картинки рисуются отдельными 3D-панелями (карусель); здесь только заголовок и подпись
     const M = 120;
-    let y = M;
-    if (s.title) y = lines(ctx, s.title, M, y + 56, CW - M * 2, 60, 600, WHITE, 1.1) + 24;
-    const boxY = y;
-    const boxH = CH - boxY - (s.caption ? 130 : M * 0.5);
-    const boxW = CW - M * 2;
-    if (s.image) {
-      try {
-        const im = await loadImage(s.image);
-        const k = Math.min(boxW / im.width, boxH / im.height);
-        const w = im.width * k;
-        const h = im.height * k;
-        const x = CW / 2 - w / 2;
-        const yy = boxY + (boxH - h) / 2;
-        ctx.save();
-        ctx.shadowColor = "rgba(0,0,0,0.6)";
-        ctx.shadowBlur = 80;
-        ctx.shadowOffsetY = 30;
-        roundRect(ctx, x, yy, w, h, 28);
-        ctx.fillStyle = "#0b0e16";
-        ctx.fill();
-        ctx.restore();
-        ctx.save();
-        roundRect(ctx, x, yy, w, h, 28);
-        ctx.clip();
-        ctx.drawImage(im, x, yy, w, h);
-        // лёгкое притемнение, чтобы белые скриншоты не били по глазам в тёмном пространстве
-        ctx.fillStyle = "rgba(0,0,0,0.14)";
-        ctx.fillRect(x, yy, w, h);
-        ctx.restore();
-        ctx.strokeStyle = "rgba(255,255,255,0.12)";
-        ctx.lineWidth = 3;
-        roundRect(ctx, x, yy, w, h, 28);
-        ctx.stroke();
-      } catch {
-        ctx.fillStyle = "#151a26";
-        roundRect(ctx, M, boxY, boxW, boxH, 28);
-        ctx.fill();
-        lines(ctx, "картинка не найдена", CW / 2, boxY + boxH / 2, boxW, 48, 400, MUTED, 1, "center");
-      }
-    }
+    if (s.title) lines(ctx, s.title, M, M + 56, CW - M * 2, 60, 600, WHITE, 1.1);
     if (s.caption) lines(ctx, s.caption, CW / 2, CH - 48, CW - PAD * 2, 40, 400, MUTED, 1.2, "center");
   }
 
