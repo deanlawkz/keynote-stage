@@ -137,9 +137,9 @@ export default function Hud() {
   return (
     <>
       {/* вертикальная линия с чекпойнтами */}
-      <nav data-nav className="fixed right-8 top-1/2 -translate-y-1/2 flex flex-col items-center select-none">
-        <div className="relative w-px bg-white/15" style={{ height: `${Math.max(1, n - 1) * 34}px` }}>
-          <div className="absolute left-0 top-0 w-px bg-white/70 transition-[height] duration-700 ease-out" style={{ height: `${n > 1 ? (index / (n - 1)) * 100 : 0}%` }} />
+      <nav data-nav className="fixed right-10 top-1/2 -translate-y-1/2 flex flex-col items-center select-none z-10">
+        <div className="relative w-px bg-white/30" style={{ height: `${Math.max(1, n - 1) * 44}px` }}>
+          <div className="absolute left-0 top-0 w-px bg-white/90 transition-[height] duration-700 ease-out" style={{ height: `${n > 1 ? (index / (n - 1)) * 100 : 0}%` }} />
           {slides.map((_, i) => (
             <button
               key={i}
@@ -147,15 +147,19 @@ export default function Hud() {
               onClick={() => useDeck.getState().go(i)}
               title={label(i)}
               aria-label={label(i)}
-              className="group absolute -left-[7px] flex items-center"
+              className="group absolute -left-[9px] flex items-center"
               style={{ top: `${n > 1 ? (i / (n - 1)) * 100 : 0}%`, transform: "translateY(-50%)" }}
             >
               <span
                 className={`block rounded-full border transition-all duration-500 ${
-                  i === index ? "w-[15px] h-[15px] bg-white border-white shadow-[0_0_14px_rgba(255,255,255,0.8)]" : i < index ? "w-[9px] h-[9px] bg-white/70 border-white/70 mx-[3px]" : "w-[9px] h-[9px] bg-transparent border-white/35 mx-[3px]"
+                  i === index ? "w-[19px] h-[19px] bg-white border-white shadow-[0_0_18px_rgba(255,255,255,0.9)]" : i < index ? "w-[11px] h-[11px] bg-white/80 border-white/80 mx-[4px]" : "w-[11px] h-[11px] bg-black/40 border-white/60 mx-[4px]"
                 }`}
               />
-              <span className="pointer-events-none absolute right-7 whitespace-nowrap text-[11px] tracking-[0.15em] uppercase text-white/0 group-hover:text-white/70 transition-colors">
+              <span
+                className={`pointer-events-none absolute right-8 whitespace-nowrap text-[11px] tracking-[0.15em] uppercase transition-colors ${
+                  i === index ? "text-white/80" : "text-white/0 group-hover:text-white/60"
+                }`}
+              >
                 {label(i)}
               </span>
             </button>
