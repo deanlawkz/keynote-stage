@@ -22,7 +22,6 @@ function makeTex() {
 }
 
 function Panel({ index, tex, hasImage, layout }: { index: number; tex: THREE.Texture; hasImage: boolean; layout: string }) {
-  const VD = viewDist(layout);
   const mat = useRef<THREE.MeshBasicMaterial>(null);
   const pos = useMemo(() => slidePos(index), [index]);
   const rot = useMemo(() => slideRot(index), [index]);
@@ -30,6 +29,7 @@ function Panel({ index, tex, hasImage, layout }: { index: number; tex: THREE.Tex
     if (!mat.current) return;
     // расстояние вдоль маршрута: положительное — слайд впереди, отрицательное — уже пролетели
     const d = camera.position.z - pos.z;
+    const VD = viewDist(layout, (camera as THREE.PerspectiveCamera).aspect || 16 / 9);
     const o = slideOpacity(d, useDeck.getState().index === index, VD);
     mat.current.opacity = o;
     // ближе — ярче, чтобы бликовало в bloom

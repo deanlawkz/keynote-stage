@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { useDeck } from "@/lib/store";
 import { asset } from "@/lib/scenario";
 import { imageCache } from "@/lib/imageCache";
-import { IMG_H, IMG_GAP, viewDist, slidePos, slideRot, slideOpacity } from "@/lib/shots";
+import { IMG_H, IMG_GAP, mediaDist, slidePos, slideRot, slideOpacity } from "@/lib/shots";
 
 type Img = { tex: THREE.Texture; w: number; h: number };
 
@@ -32,7 +32,6 @@ export default function Carousel({ index, images }: { index: number; images: str
   const mats = useRef<(THREE.MeshBasicMaterial | null)[]>([]);
   const pos = useMemo(() => slidePos(index), [index]);
   const rot = useMemo(() => slideRot(index), [index]);
-  const VD = viewDist("media");
 
   useEffect(() => {
     let alive = true;
@@ -67,6 +66,7 @@ export default function Carousel({ index, images }: { index: number; images: str
   useFrame(({ camera }) => {
     const { index: cur, carousel } = useDeck.getState();
     const d = camera.position.z - pos.z;
+    const VD = mediaDist(widths[carousel] ?? IMG_H * (16 / 9), (camera as THREE.PerspectiveCamera).aspect || 16 / 9);
     const o = slideOpacity(d, cur === index, VD);
     mats.current.forEach((m, k) => {
       if (!m) return;

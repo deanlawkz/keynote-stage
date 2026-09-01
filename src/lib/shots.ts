@@ -3,13 +3,31 @@ import * as THREE from "three";
 /** Панель слайда в метрах (пропорция как у канваса 3840×1320) */
 export const PANEL_W = 32;
 export const PANEL_H = 11;
+/** Раскладка карусели: высота картинки и зазор в метрах */
+export const IMG_H = 7.2;
+export const IMG_GAP = 1.6;
 /** Расстояние между слайдами по маршруту */
 export const STEP = 48;
-/** Где камера останавливается перед слайдом */
-export const VIEW_DIST = 15.5;
-/** К слайдам с картинкой подлетаем ближе, чтобы скриншот читался */
-export function viewDist(layout?: string) {
-  return layout === "media" ? 12.5 : VIEW_DIST;
+/** Угол обзора камеры по вертикали, градусы */
+export const FOV = 55;
+/** Запас по краям кадра (1.08 = 8 %) */
+const MARGIN = 1.1;
+
+/** Расстояние, с которого прямоугольник w×h целиком помещается в кадр при данных пропорциях экрана */
+export function fitDistance(w: number, h: number, aspect: number) {
+  const t = Math.tan((FOV / 2) * (Math.PI / 180));
+  return Math.max(((h / 2) * MARGIN) / t, ((w / 2) * MARGIN) / (t * aspect));
+}
+
+/** Дистанция до обычного слайда: панель целиком в кадре на любом экране (4:3, 16:9, 21:9, вертикальный) */
+export function viewDist(layout: string | undefined, aspect: number) {
+  // текст живёт внутри полей панели — вписываем чуть меньше самой панели
+  return fitDistance(PANEL_W * 0.86, PANEL_H * 0.9, aspect);
+}
+
+/** Дистанция до активной картинки карусели: картинка + заголовок над ней */
+export function mediaDist(imgW: number, aspect: number) {
+  return fitDistance(imgW * 1.04, IMG_H + 3.2, aspect);
 }
 
 /** Положение i-го слайда: маршрут слегка вьётся, чтобы пролёт не был прямой трубой */
@@ -27,6 +45,3 @@ export function slideOpacity(d: number, active: boolean, vd: number) {
   return THREE.MathUtils.smoothstep(d, 0.5, 8) * (1 - THREE.MathUtils.smoothstep(d, 24, 42));
 }
 
-/** Раскладка карусели: высота картинки и зазор в метрах */
-export const IMG_H = 7.2;
-export const IMG_GAP = 1.6;

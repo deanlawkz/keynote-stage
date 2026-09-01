@@ -5,7 +5,7 @@ import { Stars } from "@react-three/drei";
 import Dust from "./Dust";
 import * as THREE from "three";
 import { useDeck } from "@/lib/store";
-import { STEP } from "@/lib/shots";
+import { STEP, FOV } from "@/lib/shots";
 import Slides from "./Slides";
 import Flashes from "./Flashes";
 import Streaks from "./Streaks";
@@ -24,7 +24,7 @@ export default function Stage() {
     <div className="fixed inset-0 bg-black">
       <Canvas
         dpr={[1, 1.5]}
-        camera={{ fov: 55, near: 0.1, far: 900, position: [0, 0, 80] }}
+        camera={{ fov: FOV, near: 0.1, far: 900, position: [0, 0, 80] }}
         gl={{ antialias: false, powerPreference: "high-performance", toneMapping: THREE.NoToneMapping }}
       >
         <color attach="background" args={["#000005"]} />
