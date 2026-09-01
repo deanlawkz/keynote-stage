@@ -1,7 +1,8 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
-import { Sparkles, Stars } from "@react-three/drei";
+import { Stars } from "@react-three/drei";
+import Dust from "./Dust";
 import * as THREE from "three";
 import { useDeck } from "@/lib/store";
 import { STEP } from "@/lib/shots";
@@ -29,8 +30,8 @@ export default function Stage() {
         <color attach="background" args={["#000005"]} />
         <fogExp2 attach="fog" args={["#000005", 0.0045]} />
         <CameraRig />
-        <Stars radius={400} depth={200} count={4000} factor={5} saturation={0.1} fade speed={0.1} />
-        <Sparkles count={1800} scale={[140, 80, len]} position={[0, 0, -len / 2 + 40]} size={1.6} speed={0.08} opacity={0.28} color="#b9c8ff" />
+        <Stars radius={400} depth={200} count={3000} factor={4} saturation={0.1} fade speed={0} />
+        <Dust length={len} />
         <Flashes count={n} accent={accent} />
         <Streaks count={n} />
         {scenario && <Slides scenario={scenario} accent={accent} />}

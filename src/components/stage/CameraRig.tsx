@@ -21,9 +21,9 @@ export default function CameraRig() {
     const { index } = useDeck.getState();
     const p = slidePos(index);
     tPos.current.set(
-      p.x + Math.sin(t.current * 0.27) * 0.6 + pointer.x * 1.5,
-      p.y + Math.sin(t.current * 0.19) * 0.4 + pointer.y * 0.8,
-      p.z + VIEW_DIST + Math.cos(t.current * 0.23) * 0.5
+      p.x + Math.sin(t.current * 0.15) * 0.25 + pointer.x * 1.5,
+      p.y + Math.sin(t.current * 0.11) * 0.15 + pointer.y * 0.8,
+      p.z + VIEW_DIST + Math.cos(t.current * 0.13) * 0.2
     );
     tLook.current.set(p.x + pointer.x * 0.8, p.y + pointer.y * 0.4, p.z);
     easing.damp3(pos.current, tPos.current, 1.1, d);
