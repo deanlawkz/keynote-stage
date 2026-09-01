@@ -14,6 +14,7 @@ export default function Home() {
   useEffect(() => {
     const name = new URLSearchParams(window.location.search).get("s") || "demo";
     setFontFamily(getComputedStyle(document.body).fontFamily);
+    (window as unknown as { __deck: typeof useDeck }).__deck = useDeck; // для отладки в консоли
     loadScenario(name)
       .then(async (sc) => {
         // прогрев картинок и шрифта, чтобы слайды не мигали

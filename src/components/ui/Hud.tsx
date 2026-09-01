@@ -55,23 +55,29 @@ export default function Hud() {
       if (!n) return;
       st().setCarousel(Math.max(0, Math.min(n - 1, st().carousel + dir)));
     };
+    // один шаг на жест: после срабатывания ждём, пока поток событий прекратится (инерция трекпада)
     let acc = 0;
-    let lock = 0;
+    let armed = true;
+    let idle: ReturnType<typeof setTimeout> | null = null;
     const onWheel = (e: WheelEvent) => {
       if (!count()) return;
       e.preventDefault();
       if (e.ctrlKey || Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
         // щипок (ctrl+wheel) или вертикальное колёсико — зум
         st().setZoom(st().zoom * Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0025)));
-      } else {
-        acc += e.deltaX;
-        const now = performance.now();
-        if (Math.abs(acc) > 60 && now - lock > 500) {
-          step(acc > 0 ? 1 : -1);
-          acc = 0;
-          lock = now;
-        }
-        if (Math.abs(e.deltaX) < 2) acc = 0;
+        return;
+      }
+      if (idle) clearTimeout(idle);
+      idle = setTimeout(() => {
+        acc = 0;
+        armed = true;
+      }, 250);
+      if (!armed) return;
+      acc += e.deltaX;
+      if (Math.abs(acc) > 40) {
+        step(acc > 0 ? 1 : -1);
+        acc = 0;
+        armed = false;
       }
     };
     // тач: один палец — свайп, два — щипок
