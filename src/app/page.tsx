@@ -9,7 +9,22 @@ import { loadImage, setFontFamily } from "@/lib/painter";
 
 export default function Home() {
   const [error, setError] = useState<string | null>(null);
+  const [softGpu, setSoftGpu] = useState(false);
   const ready = useDeck((s) => s.scenario !== null);
+
+  // Windows/Chrome могут молча отключить видеокарту — тогда анимация превращается в слайд-шоу. Предупреждаем.
+  useEffect(() => {
+    try {
+      const c = document.createElement("canvas");
+      const gl = c.getContext("webgl2") ?? c.getContext("webgl");
+      if (!gl) return setSoftGpu(true);
+      const ext = gl.getExtension("WEBGL_debug_renderer_info");
+      const r = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : "";
+      if (/swiftshader|llvmpipe|software|basic render|microsoft basic/i.test(r)) setSoftGpu(true);
+    } catch {
+      /* не критично */
+    }
+  }, []);
 
   useEffect(() => {
     const name = new URLSearchParams(window.location.search).get("s") || "demo";
@@ -29,6 +44,12 @@ export default function Home() {
     <main>
       <Stage />
       {ready && <Hud />}
+      {softGpu && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 max-w-xl rounded-md bg-red-950/80 border border-red-400/40 px-4 py-3 text-[13px] leading-snug text-red-100 z-20">
+          Браузер рисует без видеокарты — анимация будет рваной. Включите аппаратное ускорение:
+          Chrome/Edge → Настройки → Система → «Использовать графическое ускорение», затем перезапустите браузер.
+        </div>
+      )}
       {error && (
         <div className="fixed inset-0 grid place-items-center text-white/70 text-sm tracking-wide">{error}</div>
       )}

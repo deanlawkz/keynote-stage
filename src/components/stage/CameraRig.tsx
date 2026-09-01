@@ -18,7 +18,7 @@ export default function CameraRig() {
   const t = useRef(0);
 
   useFrame(({ camera, pointer }, dt) => {
-    const d = Math.min(dt, 0.05);
+    const d = Math.min(dt, 0.1);
     t.current += d;
     const { index, scenario, carousel, zoom } = useDeck.getState();
     const p = slidePos(index).clone();
