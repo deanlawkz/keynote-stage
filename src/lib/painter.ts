@@ -188,11 +188,13 @@ export async function paintSlide(canvas: HTMLCanvasElement, slide: Slide, accent
   }
 
   if (s.layout === "media") {
-    let y = 220;
-    if (s.title) y = lines(ctx, s.title, PAD, y, CW - PAD * 2, 84, 700, WHITE, 1.1) + 60;
+    // картинка занимает почти весь слайд, заголовок — небольшой в углу
+    const M = 120;
+    let y = M;
+    if (s.title) y = lines(ctx, s.title, M, y + 56, CW - M * 2, 60, 600, WHITE, 1.1) + 24;
     const boxY = y;
-    const boxH = CH - boxY - (s.caption ? 220 : 140);
-    const boxW = CW - PAD * 2;
+    const boxH = CH - boxY - (s.caption ? 130 : M * 0.5);
+    const boxW = CW - M * 2;
     if (s.image) {
       try {
         const im = await loadImage(s.image);
@@ -223,12 +225,12 @@ export async function paintSlide(canvas: HTMLCanvasElement, slide: Slide, accent
         ctx.stroke();
       } catch {
         ctx.fillStyle = "#151a26";
-        roundRect(ctx, PAD, boxY, boxW, boxH, 28);
+        roundRect(ctx, M, boxY, boxW, boxH, 28);
         ctx.fill();
         lines(ctx, "картинка не найдена", CW / 2, boxY + boxH / 2, boxW, 48, 400, MUTED, 1, "center");
       }
     }
-    if (s.caption) lines(ctx, s.caption, CW / 2, CH - 110, CW - PAD * 2, 44, 400, MUTED, 1.2, "center");
+    if (s.caption) lines(ctx, s.caption, CW / 2, CH - 48, CW - PAD * 2, 40, 400, MUTED, 1.2, "center");
   }
 
   if (s.layout === "quote") {

@@ -7,6 +7,10 @@ export const PANEL_H = 11;
 export const STEP = 48;
 /** Где камера останавливается перед слайдом */
 export const VIEW_DIST = 19;
+/** К слайдам с картинкой подлетаем ближе, чтобы скриншот читался */
+export function viewDist(layout?: string) {
+  return layout === "media" ? 11.5 : VIEW_DIST;
+}
 
 /** Положение i-го слайда: маршрут слегка вьётся, чтобы пролёт не был прямой трубой */
 export function slidePos(i: number) {

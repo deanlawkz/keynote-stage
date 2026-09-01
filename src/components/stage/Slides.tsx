@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { paintSlide, CW, CH } from "@/lib/painter";
 import type { Scenario } from "@/lib/scenario";
 import { useDeck } from "@/lib/store";
-import { PANEL_W, PANEL_H, VIEW_DIST, slidePos, slideRot } from "@/lib/shots";
+import { PANEL_W, PANEL_H, viewDist, slidePos, slideRot } from "@/lib/shots";
 
 function makeTex() {
   const canvas = document.createElement("canvas");
@@ -19,7 +19,8 @@ function makeTex() {
   return { canvas, tex };
 }
 
-function Panel({ index, tex, hasImage }: { index: number; tex: THREE.Texture; hasImage: boolean }) {
+function Panel({ index, tex, hasImage, layout }: { index: number; tex: THREE.Texture; hasImage: boolean; layout: string }) {
+  const VD = viewDist(layout);
   const mat = useRef<THREE.MeshBasicMaterial>(null);
   const pos = useMemo(() => slidePos(index), [index]);
   const rot = useMemo(() => slideRot(index), [index]);
@@ -31,7 +32,7 @@ function Panel({ index, tex, hasImage }: { index: number; tex: THREE.Texture; ha
     let o: number;
     if (active) {
       // текущий слайд проявляется по мере подлёта; сзади (d<0) не показываем
-      o = d < 0 ? 0 : 1 - THREE.MathUtils.smoothstep(d, VIEW_DIST + 8, VIEW_DIST + 45);
+      o = d < 0 ? 0 : 1 - THREE.MathUtils.smoothstep(d, VD + 8, VD + 45);
     } else {
       // остальные скрыты; предыдущий гаснет, когда камера проходит сквозь него или отлетает
       o = THREE.MathUtils.smoothstep(d, 0.5, 8) * (1 - THREE.MathUtils.smoothstep(d, 24, 42));
@@ -71,7 +72,7 @@ export default function Slides({ scenario, accent }: { scenario: Scenario; accen
   return (
     <>
       {texes.map((t, i) => (
-        <Panel key={i} index={i} tex={t} hasImage={!!scenario.slides[i].image} />
+        <Panel key={i} index={i} tex={t} hasImage={!!scenario.slides[i].image} layout={scenario.slides[i].layout} />
       ))}
     </>
   );

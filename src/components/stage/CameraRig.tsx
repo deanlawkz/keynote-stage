@@ -5,7 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { easing } from "maath";
 import { useDeck } from "@/lib/store";
-import { slidePos, VIEW_DIST } from "@/lib/shots";
+import { slidePos, VIEW_DIST, viewDist } from "@/lib/shots";
 
 /** Камера летит от слайда к слайду сквозь пространство, чуть дышит и реагирует на мышь */
 export default function CameraRig() {
@@ -18,12 +18,13 @@ export default function CameraRig() {
   useFrame(({ camera, pointer }, dt) => {
     const d = Math.min(dt, 0.05);
     t.current += d;
-    const { index } = useDeck.getState();
+    const { index, scenario } = useDeck.getState();
     const p = slidePos(index);
+    const dist = viewDist(scenario?.slides[index]?.layout);
     tPos.current.set(
       p.x + Math.sin(t.current * 0.15) * 0.25 + pointer.x * 1.5,
       p.y + Math.sin(t.current * 0.11) * 0.15 + pointer.y * 0.8,
-      p.z + VIEW_DIST + Math.cos(t.current * 0.13) * 0.2
+      p.z + dist + Math.cos(t.current * 0.13) * 0.2
     );
     tLook.current.set(p.x + pointer.x * 0.8, p.y + pointer.y * 0.4, p.z);
     easing.damp3(pos.current, tPos.current, 1.1, d);
