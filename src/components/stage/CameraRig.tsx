@@ -44,8 +44,9 @@ export default function CameraRig() {
     tLook.current.set(p.x + pointer.x * 0.8, p.y + pointer.y * 0.4, p.z);
     easing.damp3(pos.current, tPos.current, 1.1, d);
     easing.damp3(look.current, tLook.current, 0.9, d);
-    // прилетели — можно листать карусель
-    useDeck.getState().setFlying(pos.current.distanceTo(tPos.current) > 1.2);
+    // прилетели (или летим уже дольше 4 с — хвост торможения не в счёт) — можно листать карусель
+    const st = useDeck.getState();
+    st.setFlying(pos.current.distanceTo(tPos.current) > 2.5 && performance.now() - st.flightStart < 4000);
     camera.position.copy(pos.current);
     camera.lookAt(look.current);
   });

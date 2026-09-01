@@ -9,6 +9,7 @@ type State = {
   zoom: number;
   /** камера ещё летит к сцене — жесты карусели не принимаем */
   flying: boolean;
+  flightStart: number;
   setFlying: (f: boolean) => void;
   setCarousel: (i: number) => void;
   setZoom: (z: number) => void;
@@ -24,6 +25,7 @@ export const useDeck = create<State>((set, get) => ({
   carousel: 0,
   zoom: 1,
   flying: false,
+  flightStart: 0,
   setFlying: (flying) => {
     if (get().flying !== flying) set({ flying });
   },
@@ -33,7 +35,7 @@ export const useDeck = create<State>((set, get) => ({
   go: (i) => {
     const n = get().scenario?.slides.length ?? 0;
     const index = Math.max(0, Math.min(n - 1, i));
-    if (index !== get().index) set({ index, carousel: 0, zoom: 1, flying: true });
+    if (index !== get().index) set({ index, carousel: 0, zoom: 1, flying: true, flightStart: performance.now() });
   },
   next: () => get().go(get().index + 1),
   prev: () => get().go(get().index - 1),
