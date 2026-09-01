@@ -20,6 +20,7 @@ export default function Stage() {
   const accent = scenario?.accent ?? DEFAULT_ACCENT;
   const n = scenario?.slides.length ?? 1;
   const len = (n + 1) * STEP;
+  const noPost = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("nopost") === "1";
   return (
     <div className="fixed inset-0 bg-black">
       <Canvas
@@ -35,7 +36,7 @@ export default function Stage() {
         <Flashes count={n} accent={accent} />
         <Streaks count={n} />
         {scenario && <Slides scenario={scenario} accent={accent} />}
-        <Post />
+        {!noPost && <Post />}
       </Canvas>
     </div>
   );

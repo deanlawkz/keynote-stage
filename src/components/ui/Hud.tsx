@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useDeck } from "@/lib/store";
 import { slideImages } from "@/lib/scenario";
+import { createSwipeDetector } from "@/lib/gesture";
 
 /** Управление: ←/→, пробел, PgUp/PgDn, клик; F — полный экран. Справа — линия с чекпойнтами сцен */
 let dragged = false;
@@ -57,10 +58,7 @@ export default function Hud() {
       if (!n) return;
       st().setCarousel(Math.max(0, Math.min(n - 1, st().carousel + dir)));
     };
-    // один шаг на жест: после срабатывания ждём, пока поток событий прекратится (инерция трекпада)
-    let acc = 0;
-    let armed = true;
-    let idle: ReturnType<typeof setTimeout> | null = null;
+    const swipe = createSwipeDetector();
     const onWheel = (e: WheelEvent) => {
       if (!count()) return;
       e.preventDefault();
@@ -69,18 +67,8 @@ export default function Hud() {
         st().setZoom(st().zoom * Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0025)));
         return;
       }
-      if (idle) clearTimeout(idle);
-      idle = setTimeout(() => {
-        acc = 0;
-        armed = true;
-      }, 250);
-      if (!armed) return;
-      acc += e.deltaX;
-      if (Math.abs(acc) > 25) {
-        step(acc > 0 ? 1 : -1);
-        acc = 0;
-        armed = false;
-      }
+      const dir = swipe.feed(e.deltaX, performance.now());
+      if (dir) step(dir);
     };
     // тач: один палец — свайп, два — щипок
     let tx = 0, tdist = 0, tzoom = 1;
