@@ -45,9 +45,16 @@ export function asset(p: string) {
 }
 
 export async function loadScenario(name: string): Promise<Scenario> {
-  const res = await fetch(asset(`/scenarios/${name}.json`), { cache: "no-store" });
-  if (!res.ok) throw new Error(`Сценарий «${name}» не найден (${res.status})`);
-  const sc = (await res.json()) as Scenario;
+  // сначала вшитые в сборку (работают без сети), потом — файл (для правок без пересборки)
+  const { SCENARIOS } = await import("@/generated/scenarios");
+  let sc: Scenario | undefined = SCENARIOS[name];
+  try {
+    const res = await fetch(asset(`/scenarios/${name}.json`), { cache: "no-store" });
+    if (res.ok) sc = (await res.json()) as Scenario;
+  } catch {
+    /* офлайн — используем вшитый */
+  }
+  if (!sc) throw new Error(`Сценарий «${name}» не найден`);
   if (!Array.isArray(sc.slides) || sc.slides.length === 0) throw new Error("В сценарии нет слайдов");
   return sc;
 }

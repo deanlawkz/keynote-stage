@@ -109,7 +109,7 @@ export function averageColor(canvas: HTMLCanvasElement): [number, number, number
   return [r / n / 255, g / n / 255, b / n / 255];
 }
 
-export async function paintSlide(canvas: HTMLCanvasElement, slide: Slide, accent: string, transparent = false) {
+export async function paintSlide(canvas: HTMLCanvasElement, slide: Slide, accent: string, transparent = false, withImages = false) {
   const ctx = canvas.getContext("2d")!;
   canvas.width = CW;
   canvas.height = CH;
@@ -188,10 +188,35 @@ export async function paintSlide(canvas: HTMLCanvasElement, slide: Slide, accent
   }
 
   if (s.layout === "media") {
-    // картинки рисуются отдельными 3D-панелями (карусель); здесь только заголовок и подпись
+    // в 3D картинки — отдельные панели (карусель); в плоском режиме рисуем их здесь в ряд
     const M = 120;
-    if (s.title) lines(ctx, s.title, M, M + 56, CW - M * 2, 60, 600, WHITE, 1.1);
+    let y = M;
+    if (s.title) y = lines(ctx, s.title, M, y + 56, CW - M * 2, 60, 600, WHITE, 1.1) + 24;
     if (s.caption) lines(ctx, s.caption, CW / 2, CH - 48, CW - PAD * 2, 40, 400, MUTED, 1.2, "center");
+    const srcs = s.images?.length ? s.images : s.image ? [s.image] : [];
+    if (withImages && srcs.length) {
+      const boxY = y;
+      const boxH = CH - boxY - (s.caption ? 130 : M * 0.5);
+      const boxW = CW - M * 2;
+      const gap = 60;
+      const ims = await Promise.all(srcs.map((src) => loadImage(src).catch(() => null)));
+      const ok = ims.filter((im): im is HTMLImageElement => !!im);
+      // общий масштаб: все картинки одной высоты, ряд помещается по ширине
+      let h = boxH;
+      let total = () => ok.reduce((a, im) => a + (im.width / im.height) * h, 0) + gap * (ok.length - 1);
+      if (total() > boxW) h *= boxW / total();
+      let x = CW / 2 - total() / 2;
+      for (const im of ok) {
+        const w = (im.width / im.height) * h;
+        const yy = boxY + (boxH - h) / 2;
+        ctx.save();
+        roundRect(ctx, x, yy, w, h, 24);
+        ctx.clip();
+        ctx.drawImage(im, x, yy, w, h);
+        ctx.restore();
+        x += w + gap;
+      }
+    }
   }
 
   if (s.layout === "quote") {

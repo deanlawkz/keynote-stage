@@ -6,7 +6,10 @@
     "dev": "next dev -p 3300",
     "build": "next build",
     "start": "next start -p 3300",
-    "lint": "eslint"
+    "lint": "eslint",
+    "bundle": "node scripts/bundle-scenarios.mjs",
+    "predev": "node scripts/bundle-scenarios.mjs",
+    "prebuild": "node scripts/bundle-scenarios.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",
