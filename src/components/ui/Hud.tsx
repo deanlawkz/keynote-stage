@@ -62,8 +62,8 @@ export default function Hud() {
     const onWheel = (e: WheelEvent) => {
       if (!count()) return;
       e.preventDefault();
-      if (e.ctrlKey || Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        // щипок (ctrl+wheel) или вертикальное колёсико — зум
+      if (e.ctrlKey || Math.abs(e.deltaY) > Math.abs(e.deltaX) * 2.5) {
+        // щипок (ctrl+wheel) или явно вертикальное колёсико — зум
         st().setZoom(st().zoom * Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0025)));
         return;
       }
@@ -74,7 +74,7 @@ export default function Hud() {
       }, 250);
       if (!armed) return;
       acc += e.deltaX;
-      if (Math.abs(acc) > 40) {
+      if (Math.abs(acc) > 25) {
         step(acc > 0 ? 1 : -1);
         acc = 0;
         armed = false;
@@ -128,6 +128,9 @@ export default function Hud() {
     };
   }, []);
 
+  const carousel = useDeck((s) => s.carousel);
+  const imgCount = scenario ? slideImages(scenario.slides[index]).length : 0;
+
   const slides = scenario?.slides ?? [];
   const label = (i: number) => slides[i].title ?? slides[i].quote ?? `Сцена ${i + 1}`;
 
@@ -159,6 +162,18 @@ export default function Hud() {
           ))}
         </div>
       </nav>
+      {imgCount > 1 && (
+        <div data-nav className="fixed left-1/2 -translate-x-1/2 bottom-5 flex gap-2 items-center select-none">
+          {Array.from({ length: imgCount }, (_, k) => (
+            <button
+              key={k}
+              data-nav
+              onClick={() => useDeck.getState().setCarousel(k)}
+              className={`h-[6px] rounded-full transition-all duration-500 ${k === carousel ? "w-6 bg-white/85" : "w-[6px] bg-white/30"}`}
+            />
+          ))}
+        </div>
+      )}
       <div className="fixed right-8 bottom-4 text-[11px] tracking-[0.2em] text-white/40 tabular-nums select-none">
         {n ? `${String(index + 1).padStart(2, "0")} / ${String(n).padStart(2, "0")}` : ""}
       </div>
