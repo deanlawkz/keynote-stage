@@ -22,7 +22,7 @@ export function fitDistance(w: number, h: number, aspect: number) {
 /** Дистанция до обычного слайда: панель целиком в кадре на любом экране (4:3, 16:9, 21:9, вертикальный) */
 export function viewDist(layout: string | undefined, aspect: number) {
   // текст живёт внутри полей панели — вписываем чуть меньше самой панели
-  return fitDistance(PANEL_W * 0.86, PANEL_H * 0.9, aspect);
+  return fitDistance(PANEL_W * 0.86, PANEL_H, aspect); // по высоте — вся панель, иначе на 32:9 срезает
 }
 
 /** Дистанция до активной картинки карусели: картинка + заголовок над ней */
