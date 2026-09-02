@@ -157,12 +157,20 @@ export async function paintSlide(canvas: HTMLCanvasElement, slide: Slide, accent
     }
     y = lines(ctx, s.title ?? "", PAD, y, CW - PAD * 2, 128, 700, WHITE, 1.1);
     y += 90;
-    for (const b of s.bullets ?? []) {
+    // размер пунктов подбираем так, чтобы весь список поместился на панели
+    const items = s.bullets ?? [];
+    let fs = 76;
+    const heightAt = (size: number) => {
+      ctx.font = font(400, size);
+      return items.reduce((h, b) => h + wrap(ctx, b, CW - PAD * 2 - 80).length * size * 1.3 + 34, 0);
+    };
+    while (fs > 40 && y + heightAt(fs) > CH - 120) fs -= 4;
+    for (const b of items) {
       ctx.fillStyle = accent;
       ctx.beginPath();
-      ctx.arc(PAD + 18, y - 24, 12, 0, Math.PI * 2);
+      ctx.arc(PAD + 18, y - fs * 0.32, fs * 0.16, 0, Math.PI * 2);
       ctx.fill();
-      y = lines(ctx, b, PAD + 80, y, CW - PAD * 2 - 80, 76, 400, "#dfe4ee", 1.3) + 34;
+      y = lines(ctx, b, PAD + 80, y, CW - PAD * 2 - 80, fs, 400, "#dfe4ee", 1.3) + 34;
     }
   }
 
