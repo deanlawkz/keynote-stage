@@ -127,7 +127,7 @@ export default function Hud() {
     <>
       {/* вертикальная линия с точками-сценами и бегущим индикатором; размеры — от высоты экрана, чтобы на 4K не пропадала */}
       <nav data-nav className="fixed top-1/2 -translate-y-1/2 select-none z-10" style={{ right: "2.2vw" }}>
-        <div className="relative bg-white/35" style={{ width: "0.2vh", height: `${Math.max(1, n - 1) * 5.5}vh` }}>
+        <div className="relative bg-white/35" style={{ width: "0.2vh", height: `${Math.max(1, n - 1) * Math.min(5.5, 78 / Math.max(1, n - 1))}vh` }}>
           {slides.map((_, i) => (
             <button
               key={i}
