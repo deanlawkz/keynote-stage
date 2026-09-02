@@ -175,7 +175,13 @@ export async function paintSlide(canvas: HTMLCanvasElement, slide: Slide, accent
     const baseY = Math.max(y + 300, CH * 0.62);
     stats.forEach((st, i) => {
       const cx = PAD + colW * i + colW / 2;
-      ctx.font = font(700, n > 3 ? 190 : 250);
+      // размер цифры подбирается под ширину колонки — «≈5,5 млн» не наезжает на соседа
+      let fs = n > 3 ? 190 : 250;
+      ctx.font = font(700, fs);
+      while (fs > 80 && ctx.measureText(st.value).width > colW - 70) {
+        fs -= 8;
+        ctx.font = font(700, fs);
+      }
       ctx.fillStyle = accent;
       ctx.textAlign = "center";
       ctx.fillText(st.value, cx, baseY);
